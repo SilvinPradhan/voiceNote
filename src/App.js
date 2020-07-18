@@ -14,6 +14,10 @@ const [isListening, setIsListening] = useState('false');
 const [note, setNote] = useState(null);
 const [savedNotes, setSavedNotes] = useState([]);
 
+useEffect(() => {
+  handleListen()
+}, [isListening])
+
 const handleListen = () => {
   if(isListening){
     mic.start()
@@ -27,6 +31,27 @@ const handleListen = () => {
       console.log('Stopped Mic on Click')
     }
   }
+  mic.onStart = () =>{
+    console.log('Mic on');
+  }
+
+  mic.onresult = event => {
+    const transcript = Array.from(event.results)
+      .map(result => result[0])
+      .map(result=>result.transcript)
+      .join('')
+      console.log(transcript)
+      setNote(transcript)
+      mic.onerror = event => {
+        console.log(event.error)
+      }
+  }
+
+}
+
+const handleSaveNote = () => {
+  setSavedNotes([...savedNotes, note])
+  setNote('')
 }
 
 
